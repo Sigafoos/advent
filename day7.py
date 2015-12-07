@@ -1,30 +1,52 @@
 import re
+import struct
 import sys
 
 wires = {}
+instructions = []
+
 fp = open('input7.txt', 'r')
 for line in fp:
-	line = 'x -> y'
-	matches = re.match('^([\w]+) (([A-Z]+) ([\w]+))? ?-> ([a-z]+)', line)
-	# 0: x RSHIFT 2 -> y
-	# 1: x
-	# 2: RSHIFT 2 / None
-	# 3: RSHIFT / None
-	# 4: 2 / None
-	# 5: y
-	if matches.group(1).isdigit():
-		inputval = matches.group(1)
-	elif matches.group(1) in wires:
-		inputval = wires[matches.group(1)]
-	else:
-		inputval = 0
-	if (matches.group(2) is not None):
-		if (matches.group(3) is 'RSHIFT'):
-			inputval = inputval >> matches.group(4)
-		else:
-			print matches.group(3) + 'is not configured'
-			print wires
-			sys.exit()
+	matches = re.match('^((?P<input>\w+) )?((?P<op>[A-Z]+) (?P<mod>\w+) )?-> (?P<out>[a-z]+)', line)
+	instructions.append(matches)
 
-	wires[matches.group(5)] = inputval
-sys.exit()
+while instructions:
+	line = instructions.pop(0)
+	if line.group('mod') is not None:
+		second = line.group('mod')
+		if line.group('mod') in wires:
+			second = wires[line.group('mod')]
+		elif second.isdigit():
+			 second = int(second)
+		else:
+			instructions.append(line)
+			continue
+
+	if line.group('input') is not None:
+		if line.group('input').isdigit():
+			inputval = int(line.group('input'))
+		elif line.group('input') in wires:
+			inputval = wires[line.group('input')]
+		else:
+			instructions.append(line)
+			continue
+
+		if line.group('op') is not None:
+			if line.group('op') == 'RSHIFT':
+				inputval = inputval >> second
+			elif line.group('op') == 'LSHIFT':
+				inputval = inputval << second
+			elif line.group('op') == 'OR':
+				inputval = inputval | second
+			elif line.group('op') == 'AND':
+				inputval = inputval & second
+			else:
+				print line.group('op') , 'is not configured'
+				print wires
+				sys.exit()
+	elif line.group('op') == 'NOT':
+		inputval = ~second
+
+	wires[line.group('out')] = inputval % 65536
+
+print wires['a']
