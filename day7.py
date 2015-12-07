@@ -1,5 +1,4 @@
 import re
-import struct
 import sys
 
 def resolve(instructions):
@@ -36,7 +35,6 @@ def resolve(instructions):
 					inputval = inputval & second
 				else:
 					print line['op'] , 'is not configured'
-					print wires
 					sys.exit()
 		elif line['op'] == 'NOT':
 			inputval = ~second
@@ -64,9 +62,8 @@ for line in fp:
 		'out': matches.group('out')
 		})
 
-second = instructions
-wires = resolve(instructions[:])
-print wires['a']
+wires = resolve(instructions[:]) # passing a copy, because otherwise it nukes the list
+print 'Part 1:' , wires['a']
 a = wires['a']
 wires = resolve(map(this_sucks, instructions))
-print wires['a']
+print 'Part 2:' , wires['a']
