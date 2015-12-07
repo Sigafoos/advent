@@ -1,5 +1,3 @@
-import sys
-
 housemap = set()
 housemap.add((0,0)) # otherwise it reduces to [0]
 robomap = set()
