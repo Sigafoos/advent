@@ -2,22 +2,29 @@ import re
 import sys
 
 def unescape(line):
-	print '***'
-	print 'Before:' , line , len(line)
-	line = re.sub(r'\A"(.*)"\Z', r'\1', line) # remove quotes
-	line = re.sub(r'\\x[0-9A-Fa-f]{2}', 'Q', line) # remove hex
+	line = re.sub('\A"(.*)"\Z', r'\1', line) # remove quotes
+	line = re.sub(r'\\x[0-9A-Fa-f]{2}', 'H', line) # remove hex
 	line = re.sub(r'\\"', '"', line) # remove quote
-	line = re.sub(r'\\\\', 'Q', line) # remove slash
-	print 'After:' , line , len(line)
+	line = re.sub(r'\\\\', r'\\', line) # remove slash
 	return line
 
-raw = 0
-escaped = 0
-for line in open('input8.txt', 'r'):
-	line = line.strip()
-	raw += len(line)
-	escaped += len(unescape(line.strip()))
+def compute(filename):
+	raw = 0
+	escaped = 0
+	for line in open(filename, 'r'):
+		line = line.strip()
+		raw += len(line)
+		line = unescape(line)
+		escaped += len(line)
+	print 'raw' , raw
+	print 'escaped' , escaped
+	return raw - escaped
 
-print 'Before:' , raw
-print 'After:' , escaped
-print 'Difference:' , str(raw - escaped)
+print 'sanity check...'
+sanity = compute('../example/example8.txt')
+if sanity is not 12:
+	sys.exit('** sanity check failed with ' + str(sanity) + ' **')
+print 'sanity check passed'
+
+print 'part 1...'
+print compute('../input/input8.txt')
