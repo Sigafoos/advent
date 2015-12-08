@@ -1,5 +1,5 @@
 <?php
-$fp = fopen('day5.txt', 'r');
+$fp = fopen('../input/input5.txt', 'r');
 $nice = 0;
 while ($line = trim(fgets($fp)))
 {

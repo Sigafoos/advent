@@ -11,7 +11,7 @@ santay = 0
 robox = 0
 roboy = 0
 i = 0
-for line in open('input3.txt', 'r'):
+for line in open('../input/input3.txt', 'r'):
 	for character in line.strip():
 		if character == '^':
 			y += 1

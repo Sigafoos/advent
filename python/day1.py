@@ -1,7 +1,7 @@
 floor = 0
 basement = 0
 i = 1
-for line in open('input1.txt', 'r'):
+for line in open('../input/input1.txt', 'r'):
 	for character in line:
 		if (character == '('):
 			floor += 1

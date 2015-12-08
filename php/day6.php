@@ -1,6 +1,6 @@
 <?php
 $day6 = new Day6();
-$fp = fopen('input6.txt', 'r');
+$fp = fopen('../input/input6.txt', 'r');
 while ($line = trim(fgets($fp)))
 {
 	$day6->parse($line);

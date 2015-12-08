@@ -15,7 +15,7 @@ $grid = array(
 );
 $i = 0;
 
-$fp = fopen('input.txt', 'r');
+$fp = fopen('../input/input3.txt', 'r');
 
 $directions = str_split(trim(fgets($fp)));
 foreach ($directions as $direction)
@@ -37,7 +37,6 @@ foreach ($directions as $direction)
 		break;
 	default:
 		die("I don't know how to handle " . $direction);
-		break;
 	}
 
 	if (empty($grid[$xpos[$key]][$ypos[$key]]))

@@ -52,7 +52,7 @@ def this_sucks(line): # tell me how you really feel
 
 instructions = []
 
-fp = open('input7.txt', 'r')
+fp = open('../input/input7.txt', 'r')
 for line in fp:
 	matches = re.match('^((?P<input>\w+) )?((?P<op>[A-Z]+) (?P<mod>\w+) )?-> (?P<out>[a-z]+)', line)
 	instructions.append({

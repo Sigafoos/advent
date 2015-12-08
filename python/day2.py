@@ -1,7 +1,7 @@
 paper = 0
 ribbon = 0
 
-for line in open('input2.txt', 'r'):
+for line in open('../input/input2.txt', 'r'):
 	dimensions = line.strip().split('x')
 	dimensions = [int(side) for side in dimensions]
 	dimensions.sort()
