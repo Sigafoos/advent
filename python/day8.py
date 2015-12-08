@@ -16,8 +16,6 @@ def compute(filename):
 		raw += len(line)
 		line = unescape(line)
 		escaped += len(line)
-	print 'raw' , raw
-	print 'escaped' , escaped
 	return raw - escaped
 
 print 'sanity check...'
