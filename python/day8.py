@@ -3,9 +3,9 @@ import sys
 
 def unescape(line):
 	line = re.sub('\A"(.*)"\Z', r'\1', line) # remove quotes
-	line = re.sub(r'\\x[0-9A-Fa-f]{2}', 'H', line) # remove hex
 	line = re.sub(r'\\"', '"', line) # remove quote
-	line = re.sub(r'\\\\', r'\\', line) # remove slash
+	line = re.sub(r'\\\\', 'S', line) # remove slash
+	line = re.sub(r'\\x[0-9A-Fa-f]{2}', 'H', line) # remove hex
 	return line
 
 def compute(filename):
@@ -24,5 +24,4 @@ if sanity is not 12:
 	sys.exit('** sanity check failed with ' + str(sanity) + ' **')
 print 'sanity check passed'
 
-print 'part 1...'
-print compute('../input/input8.txt')
+print 'part 1:' , compute('../input/input8.txt')
