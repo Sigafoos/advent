@@ -24,7 +24,17 @@ def race(reindeer, length):
 			results[name] = ((full + 1) * stats['speed'] * stats['duration'])
 	return results
 
-
 reindeer = parse('../input/input14.txt')
 results = race(reindeer, int(sys.argv[1]))
 print 'Part 1:' , results[max(results, key=results.get)]
+
+points = {}
+for racer in reindeer.keys():
+	points[racer] = 0
+for i in range(1, int(sys.argv[1])):
+	results = race(reindeer, i)
+	farthest = results[max(results, key=results.get)]
+	for racer in points:
+		if results[racer] == farthest:
+			points[racer] += 1
+print 'Part 2:' , points[max(points, key=points.get)]
