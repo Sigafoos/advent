@@ -1,32 +1,30 @@
 import itertools
 import sys
-
+#sleigh = [(0, []), (1, []), (2, [])]
+sleigh = [[0] for x in xrange(3)]
 packages = []
-for package in open('../input/input24.txt'):
-	packages.append(int(package.strip()))
-goal = sum(packages) / 3
+for line in open('../input/input24.txt'):
+	packages.append(int(line.strip()))
+target = sum(packages) / 3
+packages = sorted(packages, reverse=True)
+
+#print 'going for' , target
+#for package in packages:
+#	print [sum(contents) for (section, contents) in sleigh]
+	# sort section by weight asc
+	# if it fits, put in lowest entry
+	# else, uh, this won't work
 
 good = []
-for combo in itertools.permutations(packages):
-	sleigh = [[], [], []]
-	for package in combo:
-		sleigh = sorted(sleigh, key=sum, reverse=True)
+for combination in itertools.permutations(packages):
+	for package in combination:
 		for i in xrange(3):
-			if sum(sleigh[i]) + package <= goal:
+			if sum(sleigh[i]) + package <= target:
 				sleigh[i].append(package)
 				break
 		else:
 			break
 	else:
-		good.append(sleigh)
+		good.append(combination)
 
-products = set()
-length = 999999
-for sleigh in good:
-	sleigh = sorted(sleigh, key=len)
-	product = reduce(lambda x, y: x * y, sleigh[0])
-	if len(sleigh[0]) <= length:
-		length = len(sleigh[0])
-		products.add(product)
-
-print min(products)
+print good
