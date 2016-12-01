@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-def walk():
+def walk(part = 1):
 	position = [0, 0]
 	facing = 'N'
 	visited = []
@@ -17,7 +17,7 @@ def walk():
 				position[0] += 1
 				if position not in visited:
 					visited.append(deepcopy(position))
-				else:
+				elif part == 2:
 					return position
 			facing = 'E'
 		elif (facing == 'N' and turn == 'L') or (facing == 'S' and turn == 'R'):
@@ -25,7 +25,7 @@ def walk():
 				position[0] -= 1
 				if position not in visited:
 					visited.append(deepcopy(position))
-				else:
+				elif part == 2:
 					return position
 			facing = 'W'
 		elif (facing == 'E' and turn == 'R') or (facing == 'W' and turn == 'L'):
@@ -33,7 +33,7 @@ def walk():
 				position[1] -= 1
 				if position not in visited:
 					visited.append(deepcopy(position))
-				else:
+				elif part == 2:
 					return position
 			facing = 'S'
 		elif (facing == 'E' and turn == 'L') or (facing == 'W' and turn == 'R'):
@@ -41,10 +41,10 @@ def walk():
 				position[1] += 1
 				if position not in visited:
 					visited.append(deepcopy(position))
-				else:
+				elif part == 2:
 					return position
 			facing = 'N'
 
 	return position
 
-print sum(map(abs, walk()))
+print [sum(map(abs, walk(x))) for x in [1,2]]
