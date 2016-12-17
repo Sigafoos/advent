@@ -32,7 +32,6 @@ while True:
 	if len(nodes) == 0:
 		break
 	for current in nodes:
-
 		md5 = hashlib.md5(current[1])
 		hashed = md5.hexdigest()
 		for i in xrange(4):
