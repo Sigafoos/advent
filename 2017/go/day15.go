@@ -9,7 +9,6 @@ import (
 func Generate1(val uint64, multiple uint64, c chan uint64) {
 	for {
 		val = (val * multiple) % 2147483647
-		//fmt.Println(val)
 		c <- val
 	}
 }
