@@ -13,9 +13,9 @@ groups = {} # key should be the lowest in the group
 for k in map(str, sorted(map(int, mapped.iterkeys()))):
 	if k in known:
 		continue
-
+	
 	options = mapped[k]
-	local = [k]
+	local = [k] + mapped[k]
 	
 	while options:
 		current = options.pop(0)
