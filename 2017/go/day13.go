@@ -7,39 +7,14 @@ import (
 	"strings"
 )
 
-type Scanner struct {
-	Position int
-	Depth    int
-	Down     bool
-}
-
-func (s *Scanner) Move() {
-	if s.Down {
-		if s.Position+1 == s.Depth {
-			s.Down = false
-			s.Position--
-		} else {
-			s.Position++
-		}
-	} else {
-		if s.Position == 0 {
-			s.Down = true
-			s.Position++
-		} else {
-			s.Position--
-		}
-	}
-}
-
 type Firewall struct {
-	max      int
-	scanners map[int]*Scanner
+	scanners map[int]int
 	bail     bool
 }
 
 func NewFirewall(list []string) Firewall {
 	firewall := Firewall{
-		scanners: make(map[int]*Scanner),
+		scanners: make(map[int]int),
 	}
 
 	for _, v := range list {
@@ -51,51 +26,21 @@ func NewFirewall(list []string) Firewall {
 			panic("error converting values")
 		}
 
-		firewall.Add(key, Scanner{
-			Position: 0,
-			Depth:    size,
-			Down:     true,
-		})
-		firewall.max = key // assumes they're in ascending order
+		firewall.scanners[key] = size
 	}
 
 	return firewall
 }
 
-func (f *Firewall) Add(i int, s Scanner) {
-	f.scanners[i] = &s
-}
-
-func (f *Firewall) Scanner(i int) *Scanner {
-	if scanner, ok := f.scanners[i]; ok {
-		return scanner
-	}
-	return nil
-}
-
-func (f *Firewall) Advance() {
-	for k, _ := range f.scanners {
-		f.scanners[k].Move()
-	}
-}
-
 func (f *Firewall) Run(delay int) int {
-	for i := 0; i < delay; i++ {
-		f.Advance()
-	}
-
 	severity := 0
-	for i := 0; i <= f.max; i++ {
-		scanner := f.Scanner(i)
-		if scanner != nil && scanner.Position == 0 {
+	for k, v := range f.scanners {
+		if (k+delay)%((v-2)*2+2) == 0 {
 			if f.bail {
-				fmt.Printf("caught at column %v\n\n", i)
 				return -1
 			}
-
-			severity += i * scanner.Depth
+			severity += k * v
 		}
-		f.Advance()
 	}
 
 	return severity
@@ -111,25 +56,16 @@ func main() {
 
 	firewall := NewFirewall(list)
 
-	//fmt.Printf("Part 1: %v\n", firewall.Run(0))
-	c := 0
-	for k, v := range firewall.scanners {
-		if k%((v.Depth-2)*2+2) == 0 {
-			c += k * v.Depth
+	fmt.Printf("Part 1: %v\n", firewall.Run(0))
+
+	firewall.bail = true
+	for delay := 1; ; delay++ {
+		if delay < 0 {
+			panic("int overflowwwwww")
+		}
+		if firewall.Run(delay) == 0 {
+			fmt.Printf("Part 2: %v\n", delay)
+			break
 		}
 	}
-	fmt.Printf("Part 1: %v\n", c)
-
-	/*
-		for delay := 0; delay < 50; delay++ {
-			fmt.Printf("trying delay %v...\n", delay)
-			firewall = NewFirewall(list)
-			firewall.bail = true
-
-			if firewall.Run(delay) == 0 {
-				fmt.Printf("Part 2: %v\n", delay)
-				break
-			}
-		}
-	*/
 }
