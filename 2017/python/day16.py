@@ -23,31 +23,37 @@ def dance(d, instructions):
             raise ValueError('{} is not a recognized command'.format(m.group('i')))
     return d
 
+def transform(base, letters, transformation):
+    transformed = []
+    for (i, letter) in enumerate(letters):
+        n = letters[(letters.index(letter) + transformation[i]) % 26]
+        transformed.append(n)
+    return ''.join(transformed)
+
+letters = 'abcdefghijklmnop'
+
 d = dance(d, instructions)
 print('Part 1: {}'.format(d))
 
-pattern = [d.index(i) for i in [x for x in 'abcdefghijklmnop']]
-iterated = [x for x in str(d)]
-seen = [iterated]
-offset = 0
-for i in range(1000000000):
-    tmp = [iterated[x] for x in pattern]
-    if tmp in seen:
-        offset = seen.index(tmp)
-        break
-    seen.append(tmp)
-    iterated = tmp
-    print('using iterated: {}'.format(''.join(tmp)))
-    second = dance(d, instructions)
-    print('using dance(): {}'.format(second))
-    print('pattern: {}'.format(pattern))
-    import sys
-    sys.exit(1)
+#two = dance(d, instructions)
+#print('again:  {}'.format(two))
+#seen = [str(d)]
 
-print('second: {}'.format(second))
-print('third: {}'.format(dance(second, instructions)))
-print('\n'.join(map(lambda x: ''.join(x), seen[0:3])))
-print('---last---')
-print('\n'.join(map(lambda x: ''.join(x), seen[-3:])))
-print('repeat in iteration {} (originally {})'.format(i, offset))
-print('Part 2: {}'.format(''.join(seen[(1000000000 % i) + offset])))
+transformation = [letters.index(letter) - i for (i, letter) in enumerate(str(d))]
+raw = transform(letters, letters, transformation)
+print('Part 1: {}'.format(raw))
+d = dance(d, instructions)
+print(d)
+print(transform(letters, raw, transformation))
+
+
+#offset = 0
+#for i in range(1000000000):
+#    d = dance(d, instructions)
+#    if d in seen:
+#        offset = seen.index(str(d))
+#        break
+#    seen.append(str(d))
+#
+#print('repeat in iteration {} (originally {})'.format(i, offset))
+#print('Part 2: {}'.format(''.join(seen[(1000000000 % i) + offset])))

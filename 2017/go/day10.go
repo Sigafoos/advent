@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"./knothash"
+	"github.com/Sigafoos/advent/2017/go/knothash"
 )
 
 func main() {
