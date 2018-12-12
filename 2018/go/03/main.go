@@ -41,6 +41,16 @@ func NewClaim(raw string) *Claim {
 	}
 }
 
+func (c *Claim) Overlaps(positions map[Position]int) bool {
+	for _, p := range c.Area {
+		if count, exists := positions[*p]; exists && count > 1 {
+			return true
+		}
+	}
+
+	return false
+}
+
 type Fabric struct {
 	claims []*Claim
 }
@@ -55,7 +65,7 @@ func (f *Fabric) AddClaim(c *Claim) {
 	f.claims = append(f.claims, c)
 }
 
-func (f *Fabric) Overlapping() int {
+func (f *Fabric) Overlapping() map[Position]int {
 	positions := make(map[Position]int)
 	for _, c := range f.claims {
 		for _, p := range c.Area {
@@ -67,13 +77,19 @@ func (f *Fabric) Overlapping() int {
 		}
 	}
 
-	overlapping := 0
-	for _, v := range positions {
-		if v > 1 {
-			overlapping++
+	return positions
+}
+
+func (f *Fabric) OpenClaim() *Claim {
+	positions := f.Overlapping()
+
+	for _, c := range f.claims {
+		if !c.Overlaps(positions) {
+			return c
 		}
 	}
-	return overlapping
+
+	panic("no matching claim")
 }
 
 func main() {
@@ -89,5 +105,13 @@ func main() {
 		f.AddClaim(NewClaim(scanner.Text()))
 	}
 
-	fmt.Printf("%v\n", f.Overlapping())
+	overlapping := 0
+	for _, v := range f.Overlapping() {
+		if v > 1 {
+			overlapping++
+		}
+	}
+
+	fmt.Printf("Part 1: %v\n", overlapping)
+	fmt.Printf("Part 2: %v\n", f.OpenClaim().ID)
 }
