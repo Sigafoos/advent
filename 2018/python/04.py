@@ -27,16 +27,35 @@ with open('../input/04-sorted.txt') as fp:
 
 sleepy = None
 sleepymin = []
-for guard, minutes in guards.items():
-    if len(minutes) > len(sleepymin):
-        sleepy = guard
-        sleepymin = minutes
+naps = {}
 
-minutes = {}
-for minute in sleepymin:
-    if minute in minutes:
-        minutes[minute] += 1
-    else:
-        minutes[minute] = 1
-the_minute = max(minutes, key=minutes.get)
+part2 = {
+        'guard': None,
+        'minute': 0,
+        'count': 0
+        }
+
+for guard, minutes in guards.items():
+    if sleepy is None or len(minutes) > len(guards[sleepy]):
+        sleepy = guard
+
+    nap = {}
+    for minute in minutes:
+        if minute in nap:
+            nap[minute] += 1
+        else:
+            nap[minute] = 1
+    naps[guard] = nap
+
+    for minute, count in nap.items():
+        if count > part2['count']:
+            part2 = {
+                    'guard': int(guard),
+                    'minute': int(minute),
+                    'count': count
+                    }
+
+
+the_minute = max(naps[sleepy], key=naps[sleepy].get)
 print('Part 1: {}'.format(int(sleepy) * the_minute))
+print('Part 2: {}'.format(part2['guard'] * part2['minute']))
