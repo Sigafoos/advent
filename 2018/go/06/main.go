@@ -7,74 +7,11 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Sigafoos/advent/grid"
 	"github.com/Sigafoos/advent/position"
 )
 
-type Grid struct {
-	Coordinates []*position.Position
-}
-
-func NewGrid() *Grid {
-	return &Grid{
-		Coordinates: []*position.Position{},
-	}
-}
-
-func (g *Grid) Add(c *position.Position) {
-	g.Coordinates = append(g.Coordinates, c)
-}
-
-func (g *Grid) Max() *position.Position {
-	x := 0
-	y := 0
-	for _, p := range g.Coordinates {
-		if p.X > x {
-			x = p.X
-		}
-		if p.Y > y {
-			y = p.Y
-		}
-	}
-
-	return position.New(x, y)
-}
-
-func (g *Grid) Min() *position.Position {
-	x := 99999
-	y := 99999
-	for _, p := range g.Coordinates {
-		if p.X < x {
-			x = p.X
-		}
-		if p.Y < y {
-			y = p.Y
-		}
-	}
-
-	return position.New(x, y)
-}
-
-func (g *Grid) Closest(to *position.Position) *position.Position {
-	lowest := 9999
-	var closest *position.Position
-	tied := false
-	for _, p := range g.Coordinates {
-		if distance := p.Manhattan(to); distance < lowest {
-			tied = false
-			lowest = distance
-			closest = p
-		} else if distance == lowest {
-			tied = true
-		}
-	}
-
-	if tied {
-		return nil
-	}
-	return closest
-}
-
-func (g *Grid) Areas() map[position.Position][]*position.Position {
+func Areas(g *grid.Grid) map[position.Position][]*position.Position {
 	min := g.Min()
 	max := g.Max()
 	regions := make(map[position.Position][]*position.Position)
@@ -102,7 +39,7 @@ func (g *Grid) Areas() map[position.Position][]*position.Position {
 	return regions
 }
 
-func (g *Grid) Safe(distance int) []*position.Position {
+func Safe(g *grid.Grid, distance int) []*position.Position {
 	min := g.Min()
 	max := g.Max()
 	safe := []*position.Position{}
@@ -135,7 +72,7 @@ func main() {
 		panic(err)
 	}
 
-	grid := NewGrid()
+	g := grid.New()
 
 	scanner := bufio.NewScanner(fp)
 	for scanner.Scan() {
@@ -148,16 +85,16 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		grid.Add(position.New(x, y))
+		g.Add(position.New(x, y))
 	}
 
 	largest := []*position.Position{}
-	for _, v := range grid.Areas() {
+	for _, v := range Areas(g) {
 		if len(v) > len(largest) {
 			largest = v
 		}
 	}
 
 	fmt.Printf("Part 1: %v\n", len(largest))
-	fmt.Printf("Part 2: %v\n", len(grid.Safe(10000)))
+	fmt.Printf("Part 2: %v\n", len(Safe(g, 10000)))
 }
