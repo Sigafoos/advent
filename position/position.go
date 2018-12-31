@@ -6,8 +6,9 @@ import (
 )
 
 type Position struct {
-	X int
-	Y int
+	X        int
+	Y        int
+	Velocity [2]int
 }
 
 func New(x, y int) *Position {
@@ -25,4 +26,9 @@ func (p *Position) Manhattan(to *Position) int {
 
 func (p *Position) String() string {
 	return fmt.Sprintf("(%v, %v)", p.X, p.Y)
+}
+
+func (p *Position) Move() {
+	p.X += p.Velocity[0]
+	p.Y += p.Velocity[1]
 }
