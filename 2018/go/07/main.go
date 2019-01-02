@@ -5,14 +5,22 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"sort"
 )
 
 var LineRegexp = regexp.MustCompile(`^Step (.) must be finished before step (.) can begin\.$`)
 
+const (
+	Unsatisfied = iota
+	Satisfied   = iota
+	InProgress  = iota
+	Done        = iota
+)
+
 func NewStep(ID string) *Step {
 	return &Step{
-		ID:        ID,
-		Satisfied: true,
+		ID:     ID,
+		Status: Satisfied,
 	}
 }
 
@@ -20,18 +28,17 @@ type Step struct {
 	ID         string
 	Dependents []*Step
 	Parents    []*Step
-	Satisfied  bool
-	Done       bool
+	Status     int
 }
 
 func (s *Step) DependsOn(p *Step) {
-	s.Satisfied = false
+	s.Status = Unsatisfied
 	s.Parents = append(s.Parents, p)
 	p.Dependents = append(p.Dependents, s)
 }
 
 func (s *Step) Do() {
-	s.Done = true
+	s.Status = Done
 	for _, c := range s.Dependents {
 		c.CheckParents()
 	}
@@ -42,14 +49,14 @@ func (s *Step) AsNumeric() int {
 }
 
 func (s *Step) CheckParents() {
-	if s.Satisfied {
+	if s.Status > Satisfied {
 		return
 	}
 
-	s.Satisfied = true
+	s.Status = Satisfied
 	for _, p := range s.Parents {
-		if !p.Satisfied || !p.Done {
-			s.Satisfied = false
+		if p.Status < Done {
+			s.Status = Unsatisfied
 			return
 		}
 	}
@@ -89,11 +96,14 @@ func (i *Instructions) Step(ID string) (*Step, bool) {
 func (i *Instructions) ValidSteps() []*Step {
 	var valid []*Step
 	for _, s := range i.steps {
-		if s.Satisfied && !s.Done {
+		if s.Status == Satisfied {
 			valid = append(valid, s)
 		}
 	}
 
+	sort.Slice(valid, func(i, j int) bool {
+		return valid[i].ID < valid[j].ID
+	})
 	return valid
 }
 
@@ -101,12 +111,7 @@ func (i *Instructions) TraversibleOrder() string {
 	var order string
 
 	for valid := i.ValidSteps(); len(valid) > 0; {
-		var step *Step
-		for _, v := range valid {
-			if step == nil || v.ID < step.ID {
-				step = v
-			}
-		}
+		step := valid[0]
 		order = fmt.Sprintf("%s%s", order, step.ID)
 		step.Do()
 		valid = i.ValidSteps()
@@ -122,7 +127,19 @@ func (i *Instructions) ThreadedTime(n int) int {
 	}
 
 	t := 0
-	for ; ; t++ {
+	for valid := i.ValidSteps(); len(valid) > 0; t++ {
+		for _, w := range workers {
+			if w.step == nil || w.step.Status == Done {
+				// get a new one
+				/*
+					w.step = valid[0]
+					w.step.Status = InProgress
+					valid = i.ValidSteps()
+				*/
+				fmt.Printf("%+v\n", valid)
+				// HANDLE NO VALID BUT SOME IN PROGRESS
+			}
+		}
 		break
 	}
 
