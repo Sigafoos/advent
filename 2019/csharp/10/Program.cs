@@ -83,12 +83,12 @@ namespace _10
     class Asteroid {
         public int X {get;}
         public int Y {get;}
-        protected List<string> ratios;
+        protected List<double> tangents;
 
         public Asteroid(int x, int y) {
             this.X = x;
             this.Y = y;
-            this.ratios = new List<string>();
+            this.tangents = new List<double>();
         }
 
         public void Inspect(Asteroid asteroid) {
@@ -98,32 +98,14 @@ namespace _10
             int x = asteroid.X - this.X;
             int y = asteroid.Y - this.Y;
 
-            // I'm sure there are better ways of doing this, but there's the
-            // ratio of x/y and the direction: 1-4 for NE NW SW SE
-            var ratio = new double[2];
-            if (y == 0 || x == 0) {
-                ratio[0] = 0;
-            } else {
-                ratio[0] = (double)x/y;
-            }
-            if (x < 0 && y >= 0) {
-                ratio[1] = 1;
-            } else if (x >= 0 && y > 0) {
-                ratio[1] = 2;
-            } else if (x > 0 && y <= 0) {
-                ratio[1] = 3;
-            } else if (x <= 0 && y < 0) {
-                ratio[1] = 4;
-            }
-
-            var strRatio = $"{ratio[0]},{ratio[1]}";
-            if (!this.ratios.Contains(strRatio)) {
-                this.ratios.Add(strRatio);
+            var rads = Math.Atan2(y, x);
+            if (!this.tangents.Contains(rads)) {
+                this.tangents.Add(rads);
             }
         }
 
         public int Seen() {
-            return ratios.Count;
+            return this.tangents.Count;
         }
 
         public override string ToString() {
