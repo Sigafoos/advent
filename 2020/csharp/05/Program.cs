@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Advent.Common;
 
 List<Ticket> tickets = await FileLoader<Ticket>.Parse("../../../../../input/05.txt", line => new Ticket(line));
