@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace _16
+namespace _19
 {
 	class Program
 	{
 		static void Main(string[] args)
 		{
-			Regex re = new Regex(@"(\d{1,2}),? (\d{1,2}),? (\d{1,2}),? (\d{1,2})");
-			int[] instructions = new int[4];
-
 			try {
 				var file = System.IO.File.ReadAllLines(@"../../input/16-sample.txt");
 
 				var part1 = 0;
 				int[] before = new int[4];
 				Device after = new Device(0);
+				int[] instructions = new int[4];
+				Regex re = new Regex(@"(\d{1,2}),? (\d{1,2}),? (\d{1,2}),? (\d{1,2})");
 				var values = new Dictionary<string, OpCode>();
 				values.Add("addr", new OpCode("addr"));
 				values.Add("addi", new OpCode("addi"));
@@ -199,100 +198,7 @@ namespace _16
 				}
 			}
 			catch (System.IO.FileNotFoundException) {
-				Console.WriteLine("part 1file not found!");
-				System.Environment.Exit(1);
-			}
-
-			try {
-				var device = new Device(4);
-				var file = System.IO.File.ReadAllLines(@"../../input/16.txt");
-
-				foreach (string line in file) {
-					var match = re.Match(line).Groups;
-					int[] opcodes;
-					if (match.Count != 5) {
-						Console.WriteLine($"ERROR parsing line: {line}");
-						continue;
-					}
-
-					Console.WriteLine($"{device}");
-					var a =  Int32.Parse(match[2].Value);
-					var b =  Int32.Parse(match[3].Value);
-					var c =  Int32.Parse(match[4].Value);
-
-					// the mapping came from taking the output of the OpCode array above
-					// and logic-puzzling it out (see options.txt)
-					switch (Int32.Parse(match[4].Value)) {
-						case 0:
-							device.Gtir(a, b, c);
-							break;
-
-						case 1:
-							device.Setr(a, b, c);
-							break;
-
-						case 2:
-							device.Bori(a, b, c);
-							break;
-
-						case 3:
-							device.Gtrr(a, b, c);
-							break;
-
-						case 4:
-							device.Gtri(a, b, c);
-							break;
-
-						case 5:
-							device.Eqir(a, b, c);
-							break;
-
-						case 6:
-							device.Seti(a, b, c);
-							break;
-
-						case 7:
-							device.Eqri(a, b, c);
-							break;
-
-						case 8:
-							device.Eqrr(a, b, c);
-							break;
-
-						case 9:
-							device.Borr(a, b, c);
-							break;
-
-						case 10:
-							device.Addr(a, b, c);
-							break;
-
-						case 11:
-							device.Mulr(a, b, c);
-							break;
-
-						case 12:
-							device.Bani(a, b, c);
-							break;
-
-						case 13:
-							device.Muli(a, b, c);
-							break;
-
-						case 14:
-							device.Banr(a, b, c);
-							break;
-
-						case 15:
-							device.Addi(a, b, c);
-							break;
-					}
-				}
-
-				Console.WriteLine($"Part 2: {device.Registers()[0]}");
-			}
-			catch (System.IO.FileNotFoundException) {
-				Console.WriteLine("part 2 file not found!");
+				Console.WriteLine("file not found!");
 				System.Environment.Exit(1);
 			}
 		}
