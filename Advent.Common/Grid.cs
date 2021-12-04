@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,14 @@ namespace Advent.Common
         public int ColumnCount => _rows.FirstOrDefault(r => r.Key == 0).Value.Count;
         private readonly Dictionary<int, Row<T>> _rows;
 
+        public List<T> Row(int row) => _rows[row].ToList();
+        /// <summary>
+        /// Return the column of the grid as a list
+        /// </summary>
+        /// <param name="column">The id of the column</param>
+        /// <returns></returns>
+        public List<T> Column(int column) => _rows.Values.Select(r => r.At(column)).ToList();
+        
         public static async Task<Grid<T>> FromFile(string filename, Row<T>.ProcessFunc processFunc)
         {
             Dictionary<int, Row<T>> rows = new();
@@ -32,12 +41,16 @@ namespace Advent.Common
         }
     }
 
-    public class Row<T>
+    public class Row<T> : IEnumerable<T>
     {
+
         public int Count => _entries.Count;
+        public bool IsReadOnly => false;
         private readonly Dictionary<int, T> _entries = new();
 
         public delegate T ProcessFunc(char c);
+
+        public T At(int i) => _entries[i];
 
         public List<T> NeighborsOf(int i)
         {
@@ -58,6 +71,16 @@ namespace Advent.Common
                 _entries[i] = processFunc(entry);
                 i++;
             }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _entries.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
