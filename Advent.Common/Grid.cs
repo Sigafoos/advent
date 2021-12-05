@@ -12,14 +12,26 @@ namespace Advent.Common
         public int ColumnCount => _rows.FirstOrDefault(r => r.Key == 0).Value.Count;
         private readonly Dictionary<int, Row<T>> _rows;
 
+        public IEnumerable<List<T>> Rows => _rows.Values.Select(r => r.ToList());
         public List<T> Row(int row) => _rows[row].ToList();
+        
         /// <summary>
         /// Return the column of the grid as a list
         /// </summary>
         /// <param name="column">The id of the column</param>
         /// <returns></returns>
         public List<T> Column(int column) => _rows.Values.Select(r => r.At(column)).ToList();
+
+        public IEnumerable<List<T>> Columns => Enumerable.Range(0, ColumnCount).Select(Column);
+
+        public bool Contains(T x) => _rows.Values.Any(r => r.Contains(x));
         
+        public Grid(IEnumerable<IEnumerable<T>> raw)
+        {
+            _rows = new Dictionary<int, Row<T>>(
+                raw.Select((row, i) => new KeyValuePair<int, Row<T>>(i, new Row<T>(row))));
+        }
+
         public static async Task<Grid<T>> FromFile(string filename, Row<T>.ProcessFunc processFunc)
         {
             Dictionary<int, Row<T>> rows = new();
@@ -52,6 +64,10 @@ namespace Advent.Common
 
         public T At(int i) => _entries[i];
 
+        public bool Contains(T x) => _entries.ContainsValue(x);
+
+        public List<T> ToList() => _entries.Values.ToList();
+
         public List<T> NeighborsOf(int i)
         {
             List<T> neighbors = new();
@@ -64,13 +80,17 @@ namespace Advent.Common
 
         public Row(string row, ProcessFunc processFunc)
         {
-            //Count = row.Length;
             int i = 0;
             foreach (char entry in row)
             {
                 _entries[i] = processFunc(entry);
                 i++;
             }
+        }
+
+        public Row(IEnumerable<T> raw)
+        {
+            _entries = new Dictionary<int, T>(raw.Select((x, i) => new KeyValuePair<int, T>(i, x)));
         }
 
         public IEnumerator<T> GetEnumerator()
