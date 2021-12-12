@@ -8,6 +8,7 @@ public class Seat
     // null is floor
     public bool? Occupied { get; set; }
 
+    public Seat() { }
     public Seat(char c)
     {
         Occupied = c switch

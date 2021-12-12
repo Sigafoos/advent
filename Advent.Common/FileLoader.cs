@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Advent.Common
@@ -21,6 +22,15 @@ namespace Advent.Common
             }
 
             return entries;
+        }
+
+        public static async Task<List<T>> ParseSingleLine(string filename, string separator,
+            ProcessFunction processFunction)
+        {
+            using StreamReader reader = File.OpenText(filename);
+            string line = await reader.ReadLineAsync() ?? throw new ArgumentException($"{filename} has no lines");
+
+            return line.Trim().Split(separator).Select(entry => processFunction(entry)).ToList();
         }
     }
 }
