@@ -7,16 +7,27 @@ using System.Threading.Tasks;
 
 namespace Advent.Common
 {
-    public class Grid<T> where T : new()
+    public class Grid<T> : IEnumerable<GridObject<T>> where T : new()
     {
         public int RowCount => _rows.Count;
         public int ColumnCount => _rows.FirstOrDefault(r => r.Key == 0).Value.Count;
         private readonly Dictionary<int, Row<T>> _rows;
 
         public T At(int x, int y) => _rows[y].At(x);
+        public T At(Coordinate position) => At(position.X, position.Y);
 
         public IEnumerable<List<T>> Rows => _rows.Values.Select(r => r.ToList());
         public List<T> Row(int row) => _rows[row].ToList();
+
+        public List<T> OrthogonalNeighborsOf(Coordinate position)
+        {
+            List<T> neighbors = _rows[position.Y].NeighborsOf(position.X);
+            if (position.Y != 0)
+                neighbors.Add(At(position.Up));
+            if (position.Y < _rows.Count - 1)
+                neighbors.Add(At(position.Down));
+            return neighbors;
+        }
         
         /// <summary>
         /// Return the column of the grid as a list
@@ -93,11 +104,31 @@ namespace Advent.Common
 
         public bool Contains(T x) => _rows.Values.Any(r => r.Contains(x));
 
+        public IEnumerator<GridObject<T>> GetEnumerator()
+        {
+            for (int y = 0; y < RowCount; y++)
+            {
+                for (int x = 0; x < ColumnCount; x++)
+                {
+                    yield return new GridObject<T>
+                    {
+                        Position = new Coordinate(x, y),
+                        Value = At(x, y)
+                    };
+                }
+            }
+        }
+
         public override string ToString()
         {
             return string.Join("\n", _rows.Values.Select(r => r.ToString()));
         }
-        
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public Grid(IEnumerable<IEnumerable<T>> raw)
         {
             _rows = new Dictionary<int, Row<T>>(
@@ -146,7 +177,7 @@ namespace Advent.Common
         public bool Contains(T x) => _entries.ContainsValue(x);
 
         public List<T> ToList() => _entries.Values.ToList();
-
+        
         public List<T> NeighborsOf(int i)
         {
             List<T> neighbors = new();
@@ -183,5 +214,11 @@ namespace Advent.Common
         {
             return GetEnumerator();
         }
+    }
+
+    public class GridObject<T>
+    {
+        public T Value { get; init; }
+        public Coordinate Position { get; init; }
     }
 }

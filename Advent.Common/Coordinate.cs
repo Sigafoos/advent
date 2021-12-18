@@ -20,5 +20,10 @@ namespace Advent.Common
             coordinate = new Coordinate(x, y);
             return true;
         }
+
+        public Coordinate Left => this with { X = X - 1 };
+        public Coordinate Right => this with { X = X + 1 };
+        public Coordinate Up => this with { Y = Y - 1 };
+        public Coordinate Down => this with { Y = Y + 1 };
     }
 }
