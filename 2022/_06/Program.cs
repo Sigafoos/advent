@@ -1,6 +1,4 @@
-﻿using Advent.Common;
-
-using StreamReader reader = File.OpenText("input.txt");
+﻿using StreamReader reader = File.OpenText("input.txt");
 string input = await reader.ReadToEndAsync();
 
 int headerLocation = HeaderLocation(input, 4);
